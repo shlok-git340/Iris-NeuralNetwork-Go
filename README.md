@@ -1,6 +1,8 @@
 ## Neural Network from Scratch in Go
 
-Built a neural network completely from scratch in Go (Golang) — without using any machine learning libraries — to understand how modern frameworks like PyTorch actually work under the hood.
+Built a neural network completely from scratch in Go (Golang) 
+without using any machine learning libraries 
+to understand how modern frameworks like PyTorch actually work under the hood.
 
 ## Why this project?
 
@@ -11,23 +13,23 @@ This project answers:
 What is actually happening inside loss.backward()?
 
 ## Features
---Neural network implemented from first principles
---Multiclass classification (Iris dataset)
---Softmax + Cross-Entropy loss
---Backpropagation implemented manually
---Train/Test split with accuracy evaluation
---CLI support for experimentation
+-Neural network implemented from first principles
+-Multiclass classification (Iris dataset)
+-Softmax + Cross-Entropy loss
+-Backpropagation implemented manually
+-Train/Test split with accuracy evaluation
+-CLI support for experimentation
 ## Architecture
 
 Input Layer (4 features)--> Hidden Layer (8 neurons, sigmoid) --> Output Layer (3 neurons, softmax)
 
 ## Results
---Train Accuracy: ~95–100%
---Test Accuracy:  ~90–97%
+-Train Accuracy: ~95–100%
+-Test Accuracy:  ~90–97%
 ## Interpretation
---Setosa is linearly separable → near-perfect predictions
---Versicolor vs Virginica overlap → occasional confusion
---Model generalizes well despite small dataset
+-Setosa is linearly separable → near-perfect predictions
+-Versicolor vs Virginica overlap → occasional confusion
+-Model generalizes well despite small dataset
 ## From Scratch vs Frameworks (Conceptual Comparison)
 |Concept |	This Project (Go)	|PyTorch (Typical)|
 | :--- | :----: | ----: |
@@ -48,27 +50,27 @@ loss.backward()  = gradient computation
 optimizer.step() = weight updates
 CrossEntropyLoss = softmax + log + loss combined
 ## What I Learned
---How gradients flow through a neural network
---Why activation functions affect learning
---How loss functions guide optimization
---Why data preprocessing (normalization, shuffling) is critical
---The difference between learning ML vs using ML libraries
+-How gradients flow through a neural network
+-Why activation functions affect learning
+-How loss functions guide optimization
+-Why data preprocessing (normalization, shuffling) is critical
+-The difference between learning ML vs using ML libraries
 ## Project Structure
---neural-net-go/
---├── data/
---├── model/
---├── utils/
---├── main.go
---├── iris.csv
---├── README.md
+-neural-net-go/
+-├── data/
+-├── model/
+-├── utils/
+-├── main.go
+-├── iris.csv
+-├── README.md
 ## Run
 go run . -epochs=3000 -lr=0.01 -hidden=8
 ## Future Improvements
---Mini-batch training
---Model persistence (save/load weights)
---Visualization of decision boundaries
---Deeper architectures
---Port to PyTorch for direct comparison
+-Mini-batch training
+-Model persistence (save/load weights)
+-Visualization of decision boundaries
+-Deeper architectures
+-Port to PyTorch for direct comparison
 ## Contributing
 
 Feel free to fork and experiment!
