@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math"
 	"math/rand"
@@ -12,9 +13,18 @@ import (
 )
 
 func main() {
+	epochs := flag.Int("epochs", 3000, "Number of training epochs")
+	learningRate := flag.Float64("lr", 0.01, "Learning Rate")
+	hiddenSize := flag.Int("hidden", 8, "Number of hidden neurons")
+	dataPath := flag.String("data", "data/iris.csv", "Path to dataset")
+	flag.Parse()
+	fmt.Println("===== CONFIG =====")
+	fmt.Printf("Epochs: %d\n", *epochs)
+	fmt.Printf("Learning Rate: %.4f\n", *learningRate)
+	fmt.Printf("Hidden Neurons: %d\n\n", *hiddenSize)
+	fmt.Println("starting neural network")
 	rand.Seed(time.Now().UnixNano())
-	inputs, targets := data.LoadIrisCSV("data/iris.csv")
-	normalize(inputs)
+	inputs, targets := data.LoadIrisCSV(*dataPath)
 	total := len(inputs)
 	rand.Shuffle(total, func(i, j int) {
 		inputs[i], inputs[j] = inputs[j], inputs[i]
@@ -28,11 +38,10 @@ func main() {
 
 	testX := inputs[split:]
 	testY := targets[split:]
-	nn := model.NewNetwork(4, 8, 3)
-	var totalLoss float64
+	nn := model.NewNetwork(4, *hiddenSize, 3)
 
-	for epoch := 0; epoch < 5000; epoch++ {
-		totalLoss = 0
+	for epoch := 0; epoch < *epochs; epoch++ {
+		var totalLoss float64
 
 		for i := range trainX {
 			x := mat.NewDense(1, 4, trainX[i])
@@ -44,62 +53,63 @@ func main() {
 				totalLoss += -y.At(0, j) * math.Log(out.At(0, j)+1e-9)
 			}
 
-			nn.Train(x, y, 0.01)
+			nn.Train(x, y, *learningRate)
 		}
-
-		correct := 0
-
-		for i := range testX {
-			x := mat.NewDense(1, 4, testX[i])
-			out := nn.Forward(x)
-
-			outRow := []float64{
-				out.At(0, 0),
-				out.At(0, 1),
-				out.At(0, 2),
-			}
-
-			pred := argmax(outRow)
-			actual := argmax(testY[i])
-
-			if pred == actual {
-				correct++
-			}
-		}
-
-		accuracy := float64(correct) / float64(len(testX))
-		fmt.Println("\nTest Accuracy:", accuracy)
-		correctTrain := 0
-
-		for i := range trainX {
-			x := mat.NewDense(1, 4, trainX[i])
-			out := nn.Forward(x)
-
-			outRow := []float64{
-				out.At(0, 0),
-				out.At(0, 1),
-				out.At(0, 2),
-			}
-
-			pred := argmax(outRow)
-			actual := argmax(trainY[i])
-
-			if pred == actual {
-				correctTrain++
-			}
-		}
-
-		trainAcc := float64(correctTrain) / float64(len(trainX))
-		fmt.Println("Train Accuracy:", trainAcc)
-
 		if epoch%500 == 0 {
-			fmt.Println("Epoch:", epoch, "Loss:", totalLoss)
+			fmt.Printf("Epoch: %d Loss: %.4f\n", epoch, totalLoss)
+		}
+	}
+	correctTrain := 0
+
+	for i := range trainX {
+		x := mat.NewDense(1, 4, trainX[i])
+		out := nn.Forward(x)
+
+		outRow := []float64{
+			out.At(0, 0),
+			out.At(0, 1),
+			out.At(0, 2),
 		}
 
+		pred := argmax(outRow)
+		actual := argmax(trainY[i])
+
+		if pred == actual {
+			correctTrain++
+		}
 	}
+
+	trainAcc := float64(correctTrain) / float64(len(trainX))
+
+	correctTest := 0
+
+	for i := range testX {
+		x := mat.NewDense(1, 4, testX[i])
+		out := nn.Forward(x)
+
+		outRow := []float64{
+			out.At(0, 0),
+			out.At(0, 1),
+			out.At(0, 2),
+		}
+
+		pred := argmax(outRow)
+		actual := argmax(testY[i])
+
+		if pred == actual {
+			correctTest++
+		}
+	}
+
+	testAcc := float64(correctTest) / float64(len(testX))
+
+	fmt.Println("\n===== RESULTS =====")
+	fmt.Printf("Train Accuracy: %.2f%%\n", trainAcc*100)
+	fmt.Printf("Test Accuracy: %.2f%%\n", testAcc*100)
+
 	fmt.Println("\nPredictions:")
 
-	for i := range inputs {
+	for i := 0; i < 10 && i < len(testX); i++ {
 		x := mat.NewDense(1, 4, inputs[i])
 		out := nn.Forward(x)
 
@@ -115,13 +125,6 @@ func main() {
 			outRow,
 			pred,
 		)
-	}
-}
-func normalize(data [][]float64) {
-	for i := range data {
-		for j := range data[i] {
-			data[i][j] /= 10.0
-		}
 	}
 }
 func argmax(row []float64) int {
