@@ -17,11 +17,22 @@ func main() {
 	learningRate := flag.Float64("lr", 0.01, "Learning Rate")
 	hiddenSize := flag.Int("hidden", 8, "Number of hidden neurons")
 	dataPath := flag.String("data", "data/iris.csv", "Path to dataset")
+	version := flag.Bool("version", false, "Show version")
+	flag.Usage = func() {
+		fmt.Println("Usage: iris-nn [options]")
+		fmt.Println("\nOptions:")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
-	fmt.Println("===== CONFIG =====")
+	if *version {
+		fmt.Println("neural-net v1.0.0")
+		return
+	}
+	fmt.Println("===== Iris Neural Network CLI =====")
 	fmt.Printf("Epochs: %d\n", *epochs)
 	fmt.Printf("Learning Rate: %.4f\n", *learningRate)
 	fmt.Printf("Hidden Neurons: %d\n\n", *hiddenSize)
+	fmt.Printf("Dataset: %s\n\n", *dataPath)
 	fmt.Println("starting neural network")
 	rand.Seed(time.Now().UnixNano())
 	inputs, targets := data.LoadIrisCSV(*dataPath)
